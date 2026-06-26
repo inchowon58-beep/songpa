@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
     "/*": ["./public/images/**/*", "./node_modules/**/*"],
   },
   images: {
-    formats: ["image/avif", "image/webp"],
+    unoptimized: true,
   },
 };
 

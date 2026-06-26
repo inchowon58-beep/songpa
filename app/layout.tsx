@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
     default: siteTitle,
-    template: "%s | 송파강아지파양",
+    template: "%s | 리뷰스토리",
   },
   description: siteDescription,
   keywords: [...targetKeywords, "일산 강아지 파양", "일산 유기견", "아가펫"],
@@ -96,7 +96,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="font-sans pb-safe-floating">{children}</body>
+      <body className="font-sans pb-safe-floating lg:pb-0">{children}</body>
     </html>
   );
 }
