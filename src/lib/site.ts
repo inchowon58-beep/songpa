@@ -34,7 +34,7 @@ export const SITE = {
   imageCount: 79,
   areaServed: "대한민국 전국",
   siteUrl:
-    process.env.NEXT_PUBLIC_SITE_URL || "https://pogeun.eanimal.kr",
+    process.env.NEXT_PUBLIC_SITE_URL || "https://songpa.cattery.co.kr",
 } as const;
 
 export const CTA_LABEL = "파양입소·무료분양 문의";

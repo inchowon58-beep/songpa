@@ -56,7 +56,9 @@ export default function AdminClient() {
 
   function absolutePageUrl(path: string) {
     const base = (
-      process.env.NEXT_PUBLIC_SITE_URL || "https://pogeun.eanimal.kr"
+      (typeof window !== "undefined" ? window.location.origin : "") ||
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      "https://songpa.cattery.co.kr"
     ).replace(/\/$/, "");
     if (!path) return `${base}/guide`;
     if (path.startsWith("http")) return path;
@@ -267,13 +269,17 @@ export default function AdminClient() {
       }
       if (!res.ok) throw new Error(data.error || "발행 실패");
       setMessage(
-        `발행 완료: ${data.path}` +
+        `발행 완료: ${data.title || data.path}` +
+          (data.url ? `\n${data.url}` : "") +
           (data.indexNow ? `\nIndexNow: ${data.indexNow.message}` : "") +
           (data.quota
             ? `\n오늘 ${data.quota.publishedToday}/${data.quota.dailyLimit || "∞"} · 전체 ${data.quota.publishedTotal}/${data.quota.totalLimit || "∞"}`
             : "")
       );
       setKeyword("");
+      // 목록 강제 갱신 (캐시·지연 대비 2회)
+      await loadPages(1);
+      await new Promise((r) => setTimeout(r, 400));
       await loadPages(1);
       await loadSettings();
     } catch (err) {

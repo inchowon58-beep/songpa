@@ -291,26 +291,90 @@ export async function readPage(slug: string): Promise<SeoPage | null> {
   return readPageFs(slug);
 }
 
+async function listBlobPageSlugs(): Promise<string[]> {
+  if (!(resolveBlobToken() || isVercelRuntime())) return [];
+  try {
+    const found: string[] = [];
+    let cursor: string | undefined;
+    do {
+      const result = await list({
+        prefix: `${BLOB_PREFIX}/pages/`,
+        cursor,
+        ...blobTokenOpts(),
+      });
+      for (const b of result.blobs) {
+        const m = b.pathname.match(/\/pages\/(.+)\.json$/);
+        if (!m?.[1]) continue;
+        try {
+          found.push(decodeURIComponent(m[1]));
+        } catch {
+          found.push(m[1]);
+        }
+      }
+      cursor = result.hasMore ? result.cursor : undefined;
+    } while (cursor);
+    return found;
+  } catch (e) {
+    console.error("[seo-pages] blob list pages failed", e);
+    return [];
+  }
+}
+
 export async function listPages(): Promise<SeoPage[]> {
   const { slugs } = await readIndex();
-  const fromIndex: SeoPage[] = [];
-  for (const s of slugs) {
-    const p = await readPage(s);
-    if (p) fromIndex.push(p);
-  }
-  if (fromIndex.length > 0) {
-    return fromIndex.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+  const ordered: string[] = [...slugs];
+  const seen = new Set(ordered);
+
+  // index 누락분 보완 — 관리자 발행 후 index 반영 실패·지연 시에도 목록에 나오게
+  for (const s of await listBlobPageSlugs()) {
+    if (!seen.has(s)) {
+      ordered.unshift(s);
+      seen.add(s);
+    }
   }
 
-  const dir = pagesDir();
-  if (fs.existsSync(dir)) {
-    const files = fs.readdirSync(dir).filter((f) => f.endsWith(".json"));
-    const pages = files
-      .map((f) => readPageFs(f.replace(/\.json$/, "")))
-      .filter((p): p is SeoPage => !!p);
-    return pages.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+  const pages: SeoPage[] = [];
+  const loaded = new Set<string>();
+  for (const s of ordered) {
+    const p = await readPage(s);
+    if (p && !loaded.has(p.slug)) {
+      pages.push(p);
+      loaded.add(p.slug);
+    }
   }
-  return [];
+
+  if (pages.length === 0) {
+    const dir = pagesDir();
+    if (fs.existsSync(dir)) {
+      const files = fs.readdirSync(dir).filter((f) => f.endsWith(".json"));
+      for (const f of files) {
+        const p = readPageFs(f.replace(/\.json$/, ""));
+        if (p && !loaded.has(p.slug)) {
+          pages.push(p);
+          loaded.add(p.slug);
+        }
+      }
+    }
+  }
+
+  // index 가 실제 페이지보다 뒤처져 있으면 복구
+  if (pages.length > 0) {
+    const healed = pages.map((p) => p.slug);
+    const same =
+      healed.length === slugs.length && healed.every((s, i) => s === slugs[i]);
+    if (!same) {
+      try {
+        await writeIndex({
+          slugs: healed,
+          updatedAt: new Date().toISOString(),
+        });
+      } catch (e) {
+        console.error("[seo-pages] index heal failed", e);
+      }
+    }
+  }
+
+  return pages.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
 }
 
 export async function savePage(page: SeoPage): Promise<void> {
@@ -348,17 +412,27 @@ export async function savePage(page: SeoPage): Promise<void> {
       try {
         await writeBlobText(pagePathname, content);
       } catch (e) {
-        console.error("[seo-pages] optional blob sync failed", e);
+        // 로컬에서도 토큰이 있으면 Blob 반영 실패를 숨기지 않음 — 목록 누락 원인
+        throw new Error(
+          `Blob 동기화 실패: ${e instanceof Error ? e.message : e}`
+        );
       }
     }
   }
 
   const index = await readIndex();
-  if (!index.slugs.includes(page.slug)) {
-    index.slugs.unshift(page.slug);
-  }
+  // 새 글을 항상 맨 앞으로 (이미 있어도 재정렬)
+  index.slugs = [page.slug, ...index.slugs.filter((s) => s !== page.slug)];
   index.updatedAt = new Date().toISOString();
   await writeIndex(index);
+
+  // 저장 직후 읽기 검증 — 실패 시 즉시 에러로 관리자에 표시
+  const verify = await readPage(page.slug);
+  if (!verify) {
+    throw new Error(
+      `문서는 저장됐지만 바로 읽히지 않습니다 (slug: ${page.slug}). Blob 경로(${BLOB_PREFIX})·토큰을 확인하세요.`
+    );
+  }
 }
 
 export function pagePublicUrl(slug: string): string {
