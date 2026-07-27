@@ -1,0 +1,20 @@
+# 포근쉼터 — 네이버 서치어드바이저 / SEO 안내
+
+## 소유 확인
+layout.tsx 에 다음 메타가 포함되어 있습니다 (송파 사이트 헤드 소스와 동일):
+
+<meta name="naver-site-verification" content="d3c5fd8aeb193c5969c86303ea26f385fca8ef57" />
+
+도메인 연결 후 네이버 서치어드바이저에서 사이트 등록·확인하세요.
+소유 확인 코드가 이 사이트 전용으로 새로 발급되면 layout.tsx 의
+verification.other["naver-site-verification"] 값을 교체하면 됩니다.
+
+## IndexNow
+- 키: b9e2c4a17f8356d0e8a3c1f5b7d492e6
+- 파일: public/b9e2c4a17f8356d0e8a3c1f5b7d492e6.txt
+- 배포 URL: https://{도메인}/b9e2c4a17f8356d0e8a3c1f5b7d492e6.txt
+
+## 사이트맵 / RSS
+- /sitemap.xml
+- /robots.txt
+- /rss.xml , /feed

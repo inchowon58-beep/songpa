@@ -1,0 +1,38 @@
+﻿# 포근 쉼터 — Vercel에서 사용자가 할 일
+
+※ 달빛/하람/별빛 Blob·JWT·IndexNow 키를 절대 재사용하지 마세요.
+
+## 1) GitHub + Vercel 프로젝트
+1. 저장소: https://github.com/inchowon58-beep/songpa
+2. Vercel → Add New / 기존 songpa 프로젝트에 연결
+3. Framework: Next.js (자동 감지)
+
+## 2) Blob Storage
+- 이 프로젝트용 Blob Connect 완료
+- `BLOB_READ_WRITE_TOKEN` 아래 값 사용
+
+## 3) Environment Variables
+Production / Preview / Development 모두에 등록:
+
+| 키 | 값 |
+|---|---|
+| `NEXT_PUBLIC_SITE_URL` | 실제 도메인 (끝 슬래시 없이) |
+| `ADMIN_JWT_SECRET` | `7e4a9c2f8b1d6e0a3f5c8d2e9b4a7f1c` |
+| `INDEXNOW_KEY` | `b9e2c4a17f8356d0e8a3c1f5b7d492e6` |
+| `BLOB_READ_WRITE_TOKEN` | `vercel_blob_rw_lWk8OhGEpIXa7286_P8II0AI8XlyvkpOW9RBxFgj7WROYIT` |
+| `GEMINI_API_KEY` | (선택) |
+| `GEMINI_MODEL` | `gemini-2.5-flash` (선택) |
+
+## 4) 도메인
+Settings → Domains → 사용할 도메인 연결 후,
+`NEXT_PUBLIC_SITE_URL`을 그 도메인과 일치시키고 Redeploy.
+
+## 5) 배포 후 확인
+- 홈: `/`
+- 관리자: `/admin` (`infocs` / `infocs070207`)
+- IndexNow: `/b9e2c4a17f8356d0e8a3c1f5b7d492e6.txt`
+
+## 참고 (이미 적용됨)
+- Blob 경로 prefix: `pogeun-seo-data`
+- 쿠키/tmpdir/JWT: `pogeun-*` 전용
+- 하단 CTA: 파양입소·무료분양 문의 : 전화번호 단일 버튼
