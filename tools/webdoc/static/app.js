@@ -1,6 +1,6 @@
 (() => {
   const $ = (id) => document.getElementById(id);
-  const STORAGE_KEY = "haram-shelter-seo-settings";
+  const STORAGE_KEY = "pogeun-shelter-seo-settings";
 
   let pollTimer = null;
   let lastLogLen = 0;
@@ -157,7 +157,7 @@
     try {
       const res = await fetch("/api/meta");
       const meta = await res.json();
-      // 서버(하람) 기본값을 우선 — 달빛 localStorage 잔여값으로 사이트/경로가 바뀌지 않게
+      // 서버(포근) 기본값을 우선 — 하람/달빛 localStorage 잔여값으로 사이트/경로가 바뀌지 않게
       applySettings({
         ...(saved || {}),
         ...(meta.settings || {}),
@@ -172,7 +172,7 @@
         image_url: saved.image_url || meta.settings?.image_url,
         image_count: saved.image_count || meta.settings?.image_count,
       });
-      // 사이트 URL·출력 경로는 항상 하람 서버 메타 기준
+      // 사이트 URL·출력 경로는 항상 포근 서버 메타 기준
       if (meta.settings?.site_url) $("siteUrl").value = meta.settings.site_url;
       if (meta.settings?.out_dir) $("outDir").value = meta.settings.out_dir;
     } catch {

@@ -28,7 +28,7 @@ def cdn_image_url(base: str, num: int, ext: str = "webp") -> str:
 def _url_exists(url: str) -> bool:
     if requests is None:
         return False
-    headers = {"User-Agent": "HaramShelter-Webdoc/1.0"}
+    headers = {"User-Agent": "PogeunShelter-Webdoc/1.0"}
     try:
         res = requests.head(url, headers=headers, timeout=PROBE_TIMEOUT, allow_redirects=True)
         if res.status_code == 405:

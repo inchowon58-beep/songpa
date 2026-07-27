@@ -14,7 +14,7 @@ if exist build rmdir /s /q build
 if exist dist rmdir /s /q dist
 
 echo [3/3] 실행파일 빌드 중 (브라우저 UI)...
-python -m PyInstaller --noconfirm --clean --windowed --name "하람보호소웹문서생성기" ^
+python -m PyInstaller --noconfirm --clean --windowed --name "포근쉼터웹문서생성기" ^
   --add-data "static;static" ^
   --add-data "cdn_images.py;." ^
   --add-data "content.py;." ^
@@ -52,7 +52,7 @@ if errorlevel 1 (
 )
 
 echo.
-echo 완료: dist\하람보호소웹문서생성기\하람보호소웹문서생성기.exe
-echo 사용법: 하람보호소 프로젝트 폴더가 있는 PC에서 exe 실행
-echo         (exe 상위에서 package.json 을 자동 탐색합니다)
+echo 완료: dist\포근쉼터웹문서생성기\포근쉼터웹문서생성기.exe
+echo 사용법: 포근쉼터 프로젝트 폴더가 있는 PC에서 exe 실행
+echo         (exe 상위에서 package.json name=pogeun-shelter 을 자동 탐색합니다)
 exit /b 0

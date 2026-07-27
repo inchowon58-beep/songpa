@@ -1,49 +1,47 @@
 # -*- coding: utf-8 -*-
-"""Misplaced webdoc_haram batches → 하람보호소 public/seo-data 동기화."""
+"""Misplaced webdoc_pogeun batches → 포근쉼터 public/seo-data 동기화 (필요 시 수동 실행)."""
+
 from __future__ import annotations
 
 import json
 import shutil
-from datetime import datetime, timezone
 from pathlib import Path
 
-HARAM = Path(r"C:\Users\USER\Desktop\준모웹이미지\하람보호소")
-SRC = Path(
-    r"C:\Users\USER\Desktop\준모웹이미지\달빗쉘터\tools\webdoc\dist\달빛쉘터웹문서생성기\output\webdoc_haram_20260727_180158"
+POGEUN = Path(r"C:\Users\USER\Desktop\준모웹이미지\포근쉼터")
+# 예: 잘못 생성된 배치 폴더가 있으면 아래 경로를 수정 후 실행
+BATCH = Path(
+    r"C:\Users\USER\Desktop\준모웹이미지\포근쉼터\tools\webdoc\output"
 )
-DST_PAGES = HARAM / "public" / "seo-data" / "pages"
-DST_INDEX = HARAM / "public" / "seo-data" / "index.json"
 
 
 def main() -> None:
-    DST_PAGES.mkdir(parents=True, exist_ok=True)
+    dest_pages = POGEUN / "public" / "seo-data" / "pages"
+    dest_pages.mkdir(parents=True, exist_ok=True)
+    index_path = POGEUN / "public" / "seo-data" / "index.json"
+
     slugs: list[str] = []
-    if DST_INDEX.is_file():
+    if index_path.is_file():
         try:
-            existing = json.loads(DST_INDEX.read_text(encoding="utf-8-sig"))
-            slugs = list(existing.get("slugs") or [])
-        except Exception:
+            slugs = json.loads(index_path.read_text(encoding="utf-8")).get("slugs") or []
+        except (OSError, ValueError):
             slugs = []
 
-    added = 0
-    for batch in sorted(SRC.glob("batch_*/pages")):
-        for src in batch.glob("*.json"):
-            shutil.copy2(src, DST_PAGES / src.name)
-            slug = src.stem
+    for pages_dir in BATCH.rglob("pages"):
+        if not pages_dir.is_dir():
+            continue
+        for f in pages_dir.glob("*.json"):
+            shutil.copy2(f, dest_pages / f.name)
+            slug = f.stem
             if slug in slugs:
                 slugs.remove(slug)
             slugs.insert(0, slug)
-            added += 1
+            print(f"copied {f.name}")
 
-    index = {
-        "slugs": slugs,
-        "updatedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-    }
-    DST_INDEX.write_text(
-        json.dumps(index, ensure_ascii=False, indent=2) + "\n",
+    index_path.write_text(
+        json.dumps({"slugs": slugs, "updatedAt": __import__("datetime").datetime.utcnow().isoformat() + "Z"}, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
-    print(f"synced files={added} total_slugs={len(slugs)} -> {DST_PAGES}")
+    print(f"index slugs={len(slugs)}")
 
 
 if __name__ == "__main__":

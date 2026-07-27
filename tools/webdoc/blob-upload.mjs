@@ -1,6 +1,8 @@
 /**
  * 로컬 대량발행 → Vercel private Blob 업로드 (운영 사이트 즉시 반영)
  * 사용: node blob-upload.mjs <pagesDir> [existingIndexPath]
+ *
+ * 포근 쉼터 전용 — Blob 경로 prefix 는 사이트(seo-pages.ts)와 동일해야 함.
  */
 import fs from "fs";
 import path from "path";
@@ -8,10 +10,11 @@ import { fileURLToPath } from "url";
 import { put, get } from "@vercel/blob";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const BLOB_PREFIX = "pogeun-seo-data";
+
 const root = (
-  process.env.HARAM_PROJECT_ROOT ||
-  process.env.DALBIT_PROJECT_ROOT ||
-  process.env.WHITEPARK_PROJECT_ROOT ||
+  process.env.POGEUN_PROJECT_ROOT ||
+  process.env.POGEUN_SHELTER_ROOT ||
   process.cwd() ||
   path.resolve(__dirname, "../..")
 ).replace(/[\\/]+$/, "");
@@ -115,7 +118,7 @@ async function main() {
   };
 
   let slugs = [];
-  const indexRaw = await readBlobText("seo-data/index.json", token);
+  const indexRaw = await readBlobText(`${BLOB_PREFIX}/index.json`, token);
   if (indexRaw) {
     try {
       slugs = JSON.parse(stripBom(indexRaw)).slugs || [];
@@ -129,7 +132,7 @@ async function main() {
     const page = readJsonFile(file);
     const slug = page.slug;
     if (!slug) continue;
-    await put(`seo-data/pages/${slug}.json`, JSON.stringify(page), putOpts);
+    await put(`${BLOB_PREFIX}/pages/${slug}.json`, JSON.stringify(page), putOpts);
     slugs = slugs.filter((s) => s !== slug);
     slugs.unshift(slug);
     uploaded.push(slug);
@@ -139,9 +142,11 @@ async function main() {
     slugs,
     updatedAt: new Date().toISOString(),
   };
-  await put("seo-data/index.json", JSON.stringify(index, null, 2), putOpts);
+  await put(`${BLOB_PREFIX}/index.json`, JSON.stringify(index, null, 2), putOpts);
 
-  console.log(`Blob 업로드 완료 · ${uploaded.length}건 (웹 즉시 반영)`);
+  console.log(
+    `Blob 업로드 완료 · ${uploaded.length}건 · prefix=${BLOB_PREFIX} (웹 즉시 반영)`
+  );
 }
 
 main().catch((e) => {

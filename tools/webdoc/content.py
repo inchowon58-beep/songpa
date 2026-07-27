@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""하람보호소 - SEO 템플릿 콘텐츠 생성 (Gemini 없음).
+"""포근 쉼터 - SEO 템플릿 콘텐츠 생성 (Gemini 없음).
 
 src/lib/regional-seo.ts 의 지역 랜딩 페이지 생성기와 개념적으로 동일한 구조
 (키워드 H1, 소개/미션, 핵심 서비스 6개, 보호·시설 안내, 세 가지 약속, 4단계 절차,
@@ -19,10 +19,10 @@ from urllib.parse import quote
 
 from cdn_images import pick_images as cdn_pick_images
 
-BRAND = "하람보호소"
-DEFAULT_SITE_URL = "https://chungju178.eanimal.kr"
-BRAND_EN = "Haram Shelter"
-SITE_NAME = "하람보호소"
+BRAND = "포근 쉼터"
+DEFAULT_SITE_URL = "https://pogeun.eanimal.kr"
+BRAND_EN = "Pogeun Shelter"
+SITE_NAME = "포근 쉼터"
 PHONE = "010-9906-4068"
 PHONE_TEL = "01099064068"
 IMAGE_BASE = "https://image.cattery.co.kr/dogboho"
@@ -35,11 +35,11 @@ LOGO = "/logo.png"
 # ------------------------------------------------------------------
 
 
-def _seed_int(keyword: str, idx: int, salt: str = "haram-v2") -> int:
+def _seed_int(keyword: str, idx: int, salt: str = "pogeun-v2") -> int:
     return int(hashlib.md5(f"{keyword}|{idx}|{salt}".encode("utf-8")).hexdigest()[:8], 16)
 
 
-def _rng(keyword: str, idx: int, salt: str = "haram-v2") -> random.Random:
+def _rng(keyword: str, idx: int, salt: str = "pogeun-v2") -> random.Random:
     return random.Random(_seed_int(keyword, idx, salt))
 
 

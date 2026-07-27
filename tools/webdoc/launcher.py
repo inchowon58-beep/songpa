@@ -1,5 +1,5 @@
 """
-하람보호소 SEO 런처 (유아독존과 동일 — 로컬 웹서버 + 브라우저)
+포근 쉼터 SEO 런처 (로컬 웹서버 + 브라우저)
 """
 
 from __future__ import annotations
@@ -37,8 +37,8 @@ def _load_env() -> None:
     from project_paths import project_root
 
     root = Path(project_root())
-    os.environ["HARAM_PROJECT_ROOT"] = str(root)
-    # 다른 보호소(달빛 등)에서 남은 Blob 토큰이 섞이지 않게 파일 값을 우선
+    os.environ["POGEUN_PROJECT_ROOT"] = str(root)
+    # 다른 보호소에서 남은 Blob 토큰이 섞이지 않게 파일 값을 우선
     for name in (".env.local", ".env"):
         path = root / name
         if not path.exists():
@@ -53,7 +53,7 @@ def _load_env() -> None:
                 v = v.strip().strip('"').strip("'")
                 if not k:
                     continue
-                # 하람 .env 값은 항상 덮어씀 (빈 토큰이면 잘못된 상속 토큰 제거)
+                # 포근 .env 값은 항상 덮어씀 (빈 토큰이면 잘못된 상속 토큰 제거)
                 if k == "BLOB_READ_WRITE_TOKEN":
                     if v:
                         os.environ[k] = v
@@ -64,7 +64,7 @@ def _load_env() -> None:
         except OSError:
             pass
 
-    print(f"하람보호소 프로젝트: {root}")
+    print(f"포근 쉼터 프로젝트: {root}")
 
 
 def find_free_port(preferred: int = 8765) -> int:
@@ -105,7 +105,7 @@ def main() -> None:
 
     from web_app import app
 
-    print(f"하람보호소 SEO → {url}")
+    print(f"포근 쉼터 SEO → {url}")
     uvicorn.run(app, host="127.0.0.1", port=port, log_level="warning")
 
 

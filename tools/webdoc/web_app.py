@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""하람보호소 SEO — 로컬 FastAPI (브라우저 UI, 유아독존 방식)."""
+"""포근 쉼터 SEO — 로컬 FastAPI (브라우저 UI)."""
 
 from __future__ import annotations
 
@@ -41,7 +41,7 @@ def _static_dir() -> Path:
 STATIC = _static_dir()
 STATIC.mkdir(exist_ok=True)
 
-app = FastAPI(title="하람보호소 SEO")
+app = FastAPI(title="포근 쉼터 SEO")
 app.mount("/static", StaticFiles(directory=str(STATIC)), name="static")
 
 _job_lock = threading.RLock()
@@ -165,7 +165,7 @@ def start_run(body: RunBody) -> dict[str, Any]:
                 webdoc_dir(), "output"
             )
             stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            folder = os.path.join(out_base, f"webdoc_haram_{stamp}")
+            folder = os.path.join(out_base, f"webdoc_pogeun_{stamp}")
             root = project_root()
             sync = os.path.join(root, "public", "seo-data")
             image_url = (body.image_url or "").strip()
@@ -176,14 +176,15 @@ def start_run(body: RunBody) -> dict[str, Any]:
             _append_log(f"발행 시작 · {len(kws)}건 · 한 번 발행 {chunk_size}건")
             _append_log(f"프로젝트: {root}")
             _append_log(f"사이트: {site}")
-            if "haram" not in root.replace("\\", "/").lower() and "하람" not in root:
-                _append_log("경고: 프로젝트 경로에 하람보호소가 없습니다. 경로를 확인하세요.")
+            root_norm = root.replace("\\", "/").lower()
+            if "pogeun" not in root_norm and "포근" not in root:
+                _append_log("경고: 프로젝트 경로에 포근쉼터가 없습니다. 경로를 확인하세요.")
             from project_paths import load_blob_token
 
             if not load_blob_token():
                 _append_log(
-                    "경고: 하람 .env.local 에 BLOB_READ_WRITE_TOKEN 이 없습니다. "
-                    "Vercel(하람 프로젝트) → Storage → Blob 토큰을 넣어 주세요."
+                    "경고: 포근쉼터 .env.local 에 BLOB_READ_WRITE_TOKEN 이 없습니다. "
+                    "Vercel(포근 프로젝트) → Storage → Blob 토큰을 넣어 주세요."
                 )
 
             _append_log(

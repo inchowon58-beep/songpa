@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """프로젝트 루트·스크립트 경로 (소스 / exe 공통).
 
-하람보호소 전용 — package.json name 이 haram-shelter 인 폴더만 루트로 인정한다.
-(같은 PC에 달빛쉘터 등 유사 프로젝트가 있어도 섞이지 않게.)
+포근 쉼터 전용 — package.json name 이 pogeun-shelter 인 폴더만 루트로 인정한다.
+(같은 PC에 하람/달빛 등 유사 프로젝트가 있어도 섞이지 않게.)
 """
 
 from __future__ import annotations
@@ -13,7 +13,7 @@ import re
 import sys
 from typing import Optional
 
-EXPECTED_PACKAGE_NAME = "haram-shelter"
+EXPECTED_PACKAGE_NAME = "pogeun-shelter"
 
 
 def _package_name(root: str) -> Optional[str]:
@@ -29,7 +29,7 @@ def _package_name(root: str) -> Optional[str]:
         return None
 
 
-def _is_haram_root(path: str) -> bool:
+def _is_pogeun_root(path: str) -> bool:
     if not (os.path.isfile(os.path.join(path, "package.json")) and os.path.isdir(os.path.join(path, "public"))):
         return False
     name = _package_name(path)
@@ -38,9 +38,9 @@ def _is_haram_root(path: str) -> bool:
 
 def project_root() -> str:
     # 1) 환경변수 최우선
-    for key in ("HARAM_PROJECT_ROOT", "HARAM_SHELTER_ROOT"):
+    for key in ("POGEUN_PROJECT_ROOT", "POGEUN_SHELTER_ROOT"):
         env = os.environ.get(key, "").strip().strip('"').strip("'")
-        if env and _is_haram_root(env):
+        if env and _is_pogeun_root(env):
             return os.path.abspath(env)
 
     starts = []
@@ -49,18 +49,18 @@ def project_root() -> str:
     starts.append(os.path.dirname(os.path.abspath(__file__)))
     starts.append(os.getcwd())
 
-    # 2) 하람 package.json 이 있는 조상만 채택
+    # 2) 포근 package.json 이 있는 조상만 채택
     for start in starts:
         cur = os.path.abspath(start)
         for _ in range(12):
-            if _is_haram_root(cur):
+            if _is_pogeun_root(cur):
                 return cur
             parent = os.path.dirname(cur)
             if parent == cur:
                 break
             cur = parent
 
-    # 3) 형제/상위 폴더에서 haram-shelter 탐색 (exe 가 다른 트리에 있어도)
+    # 3) 형제/상위 폴더에서 pogeun-shelter 탐색
     search_bases = []
     for start in starts:
         cur = os.path.abspath(start)
@@ -78,12 +78,12 @@ def project_root() -> str:
         try:
             for name in os.listdir(base):
                 cand = os.path.join(base, name)
-                if _is_haram_root(cand):
+                if _is_pogeun_root(cand):
                     return cand
         except OSError:
             continue
 
-    # 4) 최후: 소스 기준 상대 경로
+    # 4) 최후: 소스 기준 상대 경로 (tools/webdoc → 프로젝트 루트)
     fallback = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
     return fallback
 
@@ -97,7 +97,6 @@ def blob_upload_script() -> str:
     meipass = getattr(sys, "_MEIPASS", None)
     if meipass:
         candidates.append(os.path.join(meipass, "blob-upload.mjs"))
-    # exe 옆 (add-data)
     if getattr(sys, "frozen", False):
         candidates.insert(
             0, os.path.join(os.path.dirname(sys.executable), "blob-upload.mjs")
@@ -117,7 +116,7 @@ def webdoc_dir() -> str:
 
 
 def load_blob_token() -> Optional[str]:
-    """하람 .env.local 토큰을 우선. (다른 프로젝트 상속 env 토큰은 무시)"""
+    """포근 .env.local 토큰을 우선. (다른 프로젝트 상속 env 토큰은 무시)"""
     root = project_root()
     for name in (".env.local", ".env"):
         path = os.path.join(root, name)

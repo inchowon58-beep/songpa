@@ -28,8 +28,8 @@ def sync_pages_dir_to_blob(pages_dir: str) -> Tuple[bool, str]:
 
     env = os.environ.copy()
     env["BLOB_READ_WRITE_TOKEN"] = token
-    env["HARAM_PROJECT_ROOT"] = root
-    env["WHITEPARK_PROJECT_ROOT"] = root  # blob-upload.mjs 호환
+    env["POGEUN_PROJECT_ROOT"] = root
+    env["POGEUN_SHELTER_ROOT"] = root
 
     try:
         proc = subprocess.run(

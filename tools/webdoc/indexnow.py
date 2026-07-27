@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-"""IndexNow 제출 — 하람보호소 로컬/서버 공통 키.
+"""IndexNow 제출 — 포근 쉼터 로컬/서버 공통 키.
 
-유아독존/기본 SEO와 같이 기본 40건 단위로 나눠 전송한다.
+기본 40건 단위로 나눠 전송한다.
 """
 
 from __future__ import annotations
@@ -17,9 +17,8 @@ except ImportError:  # pragma: no cover
     requests = None  # type: ignore
 
 INDEXNOW_ENDPOINT = "https://api.indexnow.org/indexnow"
-DEFAULT_KEY = "4e7b31032b04399436e5128531993fc7"
-DEFAULT_HOST = "chungju178.eanimal.kr"
-# 유아독존 SEO와 동일 — 한 번 요청당 URL 수
+DEFAULT_KEY = "b9e2c4a17f8356d0e8a3c1f5b7d492e6"
+DEFAULT_HOST = "pogeun.eanimal.kr"
 DEFAULT_CHUNK = 40
 MAX_CHUNK = 100
 
