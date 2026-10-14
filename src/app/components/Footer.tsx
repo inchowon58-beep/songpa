@@ -1,6 +1,14 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { SITE } from "@/lib/site";
+import {
+  BREED_BRAND,
+  BREED_PHONE,
+  BREED_PHONE_TEL,
+} from "@/lib/breed-catalog";
 
 const RELATED_LINKS = [
   { href: "https://www.yourdogzone.co.kr/", label: "유아독존" },
@@ -8,19 +16,29 @@ const RELATED_LINKS = [
 ] as const;
 
 export default function Footer() {
+  const pathname = usePathname() || "";
+  const isBreed =
+    pathname.startsWith("/bunyang") || pathname.startsWith("/goyang");
+  const brandLabel = isBreed ? BREED_BRAND : SITE.brand;
+  const phoneLabel = isBreed ? BREED_PHONE : SITE.phone;
+  const phoneHref = isBreed ? BREED_PHONE_TEL : SITE.phoneTel;
+  const bizLine = isBreed
+    ? "사업영역 · 강아지분양·고양이분양·견종·묘종 상담"
+    : "사업영역 · 강아지 파양·무료분양·입소케어·새 가족 매칭";
+
   return (
     <footer className="pogeun-footer">
       <div className="pogeun-container">
         <div className="pogeun-footer-top">
           <Link href="/" className="pogeun-footer-logo">
-            <Image src={SITE.logo} alt={`${SITE.brand} 로고`} width={52} height={52} />
-            <span>{SITE.brand}</span>
+            <Image src={SITE.logo} alt={`${brandLabel} 로고`} width={52} height={52} />
+            <span>{brandLabel}</span>
           </Link>
 
           <div className="pogeun-footer-contact">
             <span>전화 문의</span>
-            <a href={SITE.phoneTel} className="pogeun-footer-call">
-              {SITE.phone}
+            <a href={phoneHref} className="pogeun-footer-call">
+              {phoneLabel}
             </a>
             <p className="pogeun-footer-note">전국 어디서나 상담 가능 · 특정 지점 없이 운영</p>
           </div>
@@ -45,12 +63,12 @@ export default function Footer() {
 
         <div className="pogeun-footer-info">
           <div className="pogeun-footer-info-list">
-            <span>{SITE.brand}</span>
-            <span>사업영역 · 강아지 파양·무료분양·입소케어·새 가족 매칭</span>
+            <span>{brandLabel}</span>
+            <span>{bizLine}</span>
             <span>서비스 지역 · {SITE.areaServed}</span>
           </div>
           <p className="pogeun-footer-copyright">
-            © {new Date().getFullYear()} {SITE.brand}. ALL RIGHTS RESERVED.
+            © {new Date().getFullYear()} {brandLabel}. ALL RIGHTS RESERVED.
           </p>
         </div>
 

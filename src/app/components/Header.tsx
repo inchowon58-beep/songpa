@@ -3,13 +3,21 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { SITE } from "@/lib/site";
+import {
+  BREED_BRAND,
+  BREED_PHONE,
+  BREED_PHONE_TEL,
+} from "@/lib/breed-catalog";
 
 const NAV = [
   { href: "/#about", label: "소개" },
   { href: "/#benefits", label: "혜택" },
   { href: "/#surrender", label: "서비스" },
   { href: "/#gallery", label: "보호소" },
+  { href: "/bunyang", label: "강아지분양" },
+  { href: "/goyang", label: "고양이분양" },
   { href: "/#guide", label: "절차" },
   { href: "/#articles", label: "안내글" },
 ] as const;
@@ -47,6 +55,12 @@ function CloseIcon() {
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname() || "";
+  const isBreed =
+    pathname.startsWith("/bunyang") || pathname.startsWith("/goyang");
+  const brandLabel = isBreed ? BREED_BRAND : SITE.brand;
+  const phoneLabel = isBreed ? BREED_PHONE : SITE.phone;
+  const phoneHref = isBreed ? BREED_PHONE_TEL : SITE.phoneTel;
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -61,30 +75,36 @@ export default function Header() {
         <Link href="/" className="pogeun-logo" onClick={() => setOpen(false)}>
           <Image
             src={SITE.logo}
-            alt={`${SITE.brand} 로고`}
+            alt={`${brandLabel} 로고`}
             width={80}
             height={80}
             priority
             className="pogeun-logo-img"
           />
-          <span className="pogeun-logo-text">{SITE.brand}</span>
+          <span className="pogeun-logo-text">{brandLabel}</span>
         </Link>
 
         <nav className="pogeun-nav">
-          {NAV.map((item) => (
-            <a key={item.href} href={item.href}>
-              {item.label}
-            </a>
-          ))}
+          {NAV.map((item) =>
+            item.href.startsWith("/") && !item.href.includes("#") ? (
+              <Link key={item.href} href={item.href}>
+                {item.label}
+              </Link>
+            ) : (
+              <a key={item.href} href={item.href}>
+                {item.label}
+              </a>
+            )
+          )}
         </nav>
 
         <div className="pogeun-header-btns">
           <Link href="/#surrender" className="pogeun-btn-outline">
             상담안내
           </Link>
-          <a href={SITE.phoneTel} className="pogeun-btn-filled">
+          <a href={phoneHref} className="pogeun-btn-filled">
             <PhoneIcon />
-            {SITE.phone}
+            {phoneLabel}
           </a>
         </div>
 
@@ -109,19 +129,25 @@ export default function Header() {
           <CloseIcon />
         </button>
         <nav className="pogeun-mobile-nav">
-          {NAV.map((item) => (
-            <a key={item.href} href={item.href} onClick={() => setOpen(false)}>
-              {item.label}
-            </a>
-          ))}
+          {NAV.map((item) =>
+            item.href.startsWith("/") && !item.href.includes("#") ? (
+              <Link key={item.href} href={item.href} onClick={() => setOpen(false)}>
+                {item.label}
+              </Link>
+            ) : (
+              <a key={item.href} href={item.href} onClick={() => setOpen(false)}>
+                {item.label}
+              </a>
+            )
+          )}
         </nav>
         <div className="pogeun-mobile-btns">
           <Link href="/#surrender" className="pogeun-btn-outline" onClick={() => setOpen(false)}>
             상담안내
           </Link>
-          <a href={SITE.phoneTel} className="pogeun-btn-filled" onClick={() => setOpen(false)}>
+          <a href={phoneHref} className="pogeun-btn-filled" onClick={() => setOpen(false)}>
             <PhoneIcon />
-            {SITE.phone}
+            {phoneLabel}
           </a>
         </div>
       </div>

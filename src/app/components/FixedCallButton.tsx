@@ -1,6 +1,8 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { SITE, CTA_LABEL } from "@/lib/site";
+import { BREED_PHONE, BREED_PHONE_TEL } from "@/lib/breed-catalog";
 
 function PhoneIcon() {
   return (
@@ -10,13 +12,20 @@ function PhoneIcon() {
   );
 }
 
-/** 하단 중앙 상담 CTA — PC/모바일 동일한 둥근 버튼 */
+/** 하단 중앙 상담 CTA — 분양 경로에서는 0505 번호 */
 export default function FixedCallButton() {
-  const label = `${CTA_LABEL} : ${SITE.phone}`;
+  const pathname = usePathname() || "";
+  const isBreed =
+    pathname.startsWith("/bunyang") || pathname.startsWith("/goyang");
+  const phone = isBreed ? BREED_PHONE : SITE.phone;
+  const href = isBreed ? BREED_PHONE_TEL : SITE.phoneTel;
+  const label = isBreed
+    ? `강아지·고양이 분양 문의 : ${phone}`
+    : `${CTA_LABEL} : ${phone}`;
 
   return (
     <div className="pogeun-floating">
-      <a href={SITE.phoneTel} className="pogeun-floating-consult" aria-label={label}>
+      <a href={href} className="pogeun-floating-consult" aria-label={label}>
         <PhoneIcon />
         <span>{label}</span>
       </a>
